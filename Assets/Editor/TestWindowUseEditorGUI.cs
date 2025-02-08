@@ -37,8 +37,12 @@ public class TestWindowUseEditorGUI : EditorWindow
         mAtt = mMonsterData.FindProperty("att1");
         mObj = mMonsterData.FindProperty("obj");
 
+        AttData m1 = ScriptableObject.CreateInstance<AttData>();
+        mAttData = new UnityEditor.SerializedObject(m1);
+        mAtt1 = mAttData.FindProperty("a1");
+        Debug.Log(mAtt1);
+
         texture = AssetDatabase.LoadAssetAtPath<Texture>("Assets/Art/bg_window.png");
-        Debug.Log(texture);
     }
 
     private void CreateGUI()
@@ -97,7 +101,173 @@ public class TestWindowUseEditorGUI : EditorWindow
         TestDropdownButton();
         //测试 DropShadowLabel
         TestDropShadowLabel();
+        //测试 EnumPopup,IntPopup,Popup
+        TestPopup();
+        //测试FocusTextInControl
+        //TestFocusTextInControl();
+        //测试Foldout
+        TestFoldout();
+        //测试GetPropertyHeight
+        TestGetPropertyHeight();
+        //测试HandlePrefixLabel
+        TestHandlePrefixLabel();
+        //测试HelpBox
+        TestHelpBox();
+        //测试InspectorTitlebar
+        //TestInspectorTitlebar();
+        //测试Slider
+        TestSlider();
+        //测试PrefixLabel
+        TestPrefixLabel();
+        //测试ProgressBar
+        TestProgressBar();
+        //测试SelectableLabel
+        TestSelectableLabel();
+        //测试TextArea
+        TestTextArea();
+        //测试Toggle
+        TestToggle();
+        //测试LinkButton
+        TestLinkButton();
     }
+
+    #region 测试Toggle
+    bool toglevalue = false;
+    bool toggleLeftValue = false;
+    public void TestToggle()
+    {
+        toglevalue = EditorGUI.Toggle(new Rect(600, 290, 200, 20), "testToggle", toglevalue);
+        toggleLeftValue = EditorGUI.ToggleLeft(new Rect(600, 320, 200, 20), "testToggleLeft", toggleLeftValue);
+    }
+    #endregion
+
+    #region 测试TextArea
+    string inputTxt = "请输入。。。";
+    public void TestTextArea()
+    {
+        inputTxt = EditorGUI.TextArea(new Rect(600, 260, 200, 20), inputTxt);
+    }
+    #endregion
+
+    #region 测试SelectableLabel
+    public void TestSelectableLabel()
+    {
+        EditorGUI.SelectableLabel(new Rect(600, 230, 200, 20), "testSelectableLabel");
+    }
+    #endregion
+
+    #region 测试ProgressBar
+
+    float processValue = 0;
+
+    public void TestProgressBar()
+    {
+        EditorGUI.ProgressBar(new Rect(600, 200, 200, 20),processValue, "testProgressBar");
+    }
+    #endregion
+
+    #region 测试PrefixLabel
+    public void TestPrefixLabel()
+    {
+       EditorGUI.PrefixLabel(new Rect(600, 180, 200, 20), new GUIContent("testPrefixLabel"));
+    }
+    #endregion
+
+    #region 测试LinkButton
+    public void TestLinkButton()
+    {
+        if(EditorGUI.LinkButton(new Rect(900, 200, 200, 20), "TestLinkButton"))
+        {
+            Application.OpenURL("Www.baidu.com");
+        }
+    }
+    #endregion
+
+    #region 测试Slider
+
+    int valueInt = 0;
+    float valueFloat = 50.8f;
+    public void TestSlider()
+    {
+        valueInt = EditorGUI.IntSlider(new Rect(300, 410, 200, 20),valueInt,0,100);
+        valueFloat = EditorGUI.Slider(new Rect(300, 440, 200, 20), valueFloat, 0, 100);
+        //弃用的
+        //EditorGUI.MinMaxSlider();
+    }
+    #endregion
+
+    #region 测试InspectorTitlebar
+    public void TestInspectorTitlebar()
+    {
+        EditorGUI.InspectorTitlebar(new Rect(300, 390, 200, 20),new UnityEngine.Object[] {});
+    }
+    #endregion
+
+    #region 测试 HelpBox
+    public void TestHelpBox()
+    {
+        EditorGUI.HelpBox(new Rect(300, 350, 200, 20),"测试HelpBox",MessageType.Warning);
+    }
+    #endregion
+
+    #region HandlePrefixLabel
+    public void TestHandlePrefixLabel()
+    {
+        EditorGUI.HandlePrefixLabel(new Rect(300, 520, 200, 20), new Rect(300, 322, 200, 20), new GUIContent("testHandlePrefixLabel"));
+    }
+    #endregion
+
+    #region 测试GetPropertyHeight
+    public void TestGetPropertyHeight()
+    {
+        //获取 PropertyField 控件所需的高度。
+        float h = EditorGUI.GetPropertyHeight(mAtt, true);
+        Debug.Log(h);
+    }
+    #endregion
+
+    #region 测试Foldout
+    bool _isShow = false;
+    public void TestFoldout()
+    {
+        _isShow = EditorGUI.Foldout(new Rect(300, 290, 200, 20), _isShow, "testFoldout");
+        if (_isShow)
+        {
+            if (Selection.activeTransform)
+            {
+                Selection.activeTransform.position = EditorGUI.Vector3Field(new Rect(300, 310, 200, 100), "Position", Selection.activeTransform.position);
+            }
+            else
+            {
+                EditorGUI.LabelField(new Rect(300, 310, 200, 20), "请先选中一个物体！");
+            }
+        }
+    }
+    #endregion
+
+    #region ????测试FocusTextInControl
+    public void TestFocusTextInControl()
+    {
+        EditorGUI.FocusTextInControl("test");
+    }
+    #endregion
+
+    #region 测试 EnumPopup,IntPopup,Popup
+    public enum PopUpEnum
+    {
+        first,
+        second, 
+        third, 
+        fourth,
+    }
+
+    public void TestPopup()
+    {
+        EditorGUI.EnumPopup(new Rect(300,200,200,20),PopUpEnum.fourth);
+        EditorGUI.IntPopup(new Rect(300,230,200,20),0,new GUIContent[] {new GUIContent("第一个"),new GUIContent("第二个")},new int[] {0,1}); ;
+        EditorGUI.Popup(new Rect(300, 260, 200, 20),0, new GUIContent[] { new GUIContent("One"), new GUIContent("Two") });
+    }
+    #endregion
 
     #region 测试DropShadowLabel
     public void TestDropShadowLabel()
@@ -135,6 +305,7 @@ public class TestWindowUseEditorGUI : EditorWindow
     public void TestDrawTextureAlpha()
     {
         //在矩形内绘制纹理的Alpha通道
+        EditorGUI.LabelField(new Rect(300, 480, 200, 200), "在矩形内绘制纹理的Alpha通道");
         EditorGUI.DrawTextureAlpha(new Rect(300, 590, 200, 200),texture);
     }
     #endregion
@@ -142,6 +313,7 @@ public class TestWindowUseEditorGUI : EditorWindow
     #region 测试DrawRect
     public void TestDrawRect()
     {
+        EditorGUI.LabelField(new Rect(900, 880, 250, 200), "在窗口指定位置绘制一个指定颜色的矩形");
         //在窗口指定位置绘制一个指定颜色的矩形
         EditorGUI.DrawRect(new Rect(900, 990, 200, 200),Color.red);
     }
@@ -151,6 +323,7 @@ public class TestWindowUseEditorGUI : EditorWindow
     Texture texture;
     public void TestDrawPreviewTexture()
     {
+        EditorGUI.LabelField(new Rect(600, 880, 200, 200), "在矩形内绘制纹理");
         //在矩形内绘制纹理
         EditorGUI.DrawPreviewTexture(new Rect(600, 990, 200, 200), texture);
     }
@@ -166,6 +339,7 @@ public class TestWindowUseEditorGUI : EditorWindow
         public float maxmp;
     }
 
+    [Serializable]
     public class MonsterData : ScriptableObject
     {
         public Attribute att1;
@@ -177,49 +351,63 @@ public class TestWindowUseEditorGUI : EditorWindow
         }
     }
     SerializedObject mMonsterData;
+    SerializedObject mAttData;
+
+    [Serializable]
+    public class AttData : ScriptableObject
+    {
+        public int a1 = 1;
+        public int a2 = 2;
+        public int a3 = 3;
+        public int a4 = 4;
+    }
+
     SerializedProperty mAtt;
+    SerializedProperty mAtt1;
 
     SerializedProperty mObj;
     public void TestField()
     {
         //BoundsField 用于输入Bounds的Center和Extents字段
-        EditorGUI.BoundsField(new Rect(0,300,250,50),new Bounds(Vector3.zero,Vector3.one));
+        EditorGUI.BoundsField(new Rect(0,300,250,50), "BoundsField", new Bounds(Vector3.zero,Vector3.one));
         //BoundsIntField 用于输入BoundsInt的Position和Size字段
-        EditorGUI.BoundsIntField(new Rect(0,350,250,50),new BoundsInt(Vector3Int.zero,Vector3Int.one));
+        EditorGUI.BoundsIntField(new Rect(0,360,250,50), "BoundsIntField", new BoundsInt(Vector3Int.zero,Vector3Int.one));
         //ColorField 用于选择Color字段
-        EditorGUI.ColorField(new Rect(0,400,100,20),Color.white);
+        EditorGUI.ColorField(new Rect(0,430,100,20), "ColorField ", Color.white);
         //CurveField 用于编辑AnimationCurve的字段
-        EditorGUI.CurveField(new Rect(0,430,100,20),new AnimationCurve());
+        EditorGUI.CurveField(new Rect(0,460,250,20), "CurveField", new AnimationCurve());
         //EnumFlagsField 
-        EditorGUI.EnumFlagsField(new Rect(0,460,100,20),SpeedOption.Fast);
+        EditorGUI.EnumFlagsField(new Rect(0,490,200,20), "EnumFlagsField", SpeedOption.Fast);
         //DoubleField 用于输入双精度浮点数的字段
-        EditorGUI.DoubleField(new Rect(0,490,100,20),0);
+        EditorGUI.DoubleField(new Rect(0,520,200,20), "DoubleField", 0);
         //FloatField 用于输入浮点数的文本字段
-        EditorGUI.FloatField(new Rect(0,520,100,20),0);
+        EditorGUI.FloatField(new Rect(0,550,200,20), "FloatField", 0);
         //IntField 用于输入整数的字段
-        EditorGUI.IntField(new Rect(0,550,100,20),0);
+        EditorGUI.IntField(new Rect(0,580,200,20), "IntField", 0);
         //LongField 用于输入长整数的字段
-        EditorGUI.LongField(new Rect(0, 580, 100, 20),0);
+        EditorGUI.LongField(new Rect(0, 610, 200, 20), "LongField", 0);
         //LabelField 创建一个标签字段
-        EditorGUI.LabelField(new Rect(0, 610, 100, 20), "这是一个标签");
+        EditorGUI.LabelField(new Rect(0, 640, 100, 20), "这是一个标签");
         //LayerField 创建一个层选择字段
-        EditorGUI.LayerField(new Rect(0, 640, 100, 20), 0);
+        EditorGUI.LayerField(new Rect(0, 670, 250, 20), "LayerField", 0);
         //GradientField 创建一个用于编辑Gradient的字段
-        EditorGUI.GradientField(new Rect(0, 670, 100, 20), new Gradient());
+        EditorGUI.GradientField(new Rect(0, 700, 250, 20), "GradientField", new Gradient());
         //MaskField 创建一个掩码字段
-        EditorGUI.MaskField(new Rect(0,700,100,20),0,new string[] {"player","enemy","npc"});
+        EditorGUI.MaskField(new Rect(0,730,100,20), "MaskField", 0,new string[] {"player","enemy","npc"});
         //MultiFloatField 同一行输入多个浮点值
-        EditorGUI.MultiFloatField(new Rect(0, 730, 200, 20), new GUIContent[] {new GUIContent("第一个"),new GUIContent("第二个")}, new float[] {2.5f,3.0f});
+        EditorGUI.MultiFloatField(new Rect(0, 760, 200, 20),new GUIContent("MultiFloatField"), new GUIContent[] {new GUIContent("第一个"),new GUIContent("第二个")}, new float[] {2.5f,3.0f});
         //MultiIntField 同一行输入多个整数
-        EditorGUI.MultiIntField(new Rect(0, 760, 200, 20), new GUIContent[] { new GUIContent("第一个"), new GUIContent("第二个") }, new int[] { 6, 100 });
-        //MultiPropertyField 同一行包含多个属性
-        //EditorGUI.MultiPropertyField(new Rect(0,790,200,20), new GUIContent[] { new GUIContent("第一个"), new GUIContent("第二个") }, mAtt);
+        EditorGUI.MultiIntField(new Rect(0, 810, 200, 20),new GUIContent[] { new GUIContent("第一个"), new GUIContent("第二个") }, new int[] { 6, 100 });
+        //MultiPropertyField 同一行包含多个属性，标签数组决定显示的属性数量。使用的属性不应超过4个
+        mAtt1 = mAttData.FindProperty("a1");
+        //mAtt = mMonsterData.FindProperty("att1");
+        EditorGUI.MultiPropertyField(new Rect(0,830,300,20), new GUIContent[] { new GUIContent("第一个"), new GUIContent("第二个"), new GUIContent("第三个"), new GUIContent("第四个") },mAtt1, new GUIContent("MultiPropertyField"));
         //ObjectField 创建一个对象字段，可以通过拖放对象或者使用对象选择器选择对象来分配对象
-        EditorGUI.ObjectField(new Rect(0,820,250,20),mObj);
+        EditorGUI.ObjectField(new Rect(0,870,250,20),mObj);
         //PasswordField 创建一个输入密码的字段
-        EditorGUI.PasswordField(new Rect(0,850,250,20),"这是一个密码","ssssss");
+        EditorGUI.PasswordField(new Rect(0,900,250,20),"这是一个密码","ssssss");
         //PropertyField 针对SerializedProperty 创建一个字段
-        EditorGUI.PropertyField(new Rect(0,880,200,20),mAtt,new GUIContent("这是一个属性字段"),true);
+        EditorGUI.PropertyField(new Rect(0,930,200,20),mAtt,new GUIContent("这是一个属性字段"),true);
         //RectField 创建用于输入Rect的xywh的字段
         EditorGUI.RectField(new Rect(300,880,200,20),"这是一个Rect字段",new Rect(0,0,200.0f,200.0f));
         //RectIntField 创建用于输入RectInt的xywh的字段
@@ -229,15 +417,15 @@ public class TestWindowUseEditorGUI : EditorWindow
         //TextField 创建一个文本字段
         EditorGUI.TextField(new Rect(600,810,250,20),"这是一个文本字段","请输入。。。");
         //Vector2Field 输入Vector2的xy字段
-        EditorGUI.Vector2Field(new Rect(0, 990, 200, 20), "这是一个Vector2字段", Vector2.zero);
+        EditorGUI.Vector2Field(new Rect(0, 1030, 200, 20), "这是一个Vector2字段", Vector2.zero);
         //Vector2IntField 输入Vector2Int的xy字段
-        EditorGUI.Vector2IntField(new Rect(0, 1030, 200, 20), "这是一个Vector2Int字段", Vector2Int.zero);
+        EditorGUI.Vector2IntField(new Rect(0, 1070, 200, 20), "这是一个Vector2Int字段", Vector2Int.zero);
         //Vector3Field 输入Vector3的xyz字段
-        EditorGUI.Vector3Field(new Rect(0, 1070, 200, 20), "这是一个Vector3字段", Vector3.zero);
+        EditorGUI.Vector3Field(new Rect(0, 1110, 200, 20), "这是一个Vector3字段", Vector3.zero);
         //Vector3IntField 输入Vector3Intd的xyz字段
-        EditorGUI.Vector3IntField(new Rect(0, 1110, 200, 20), "这是一个Vector3Int字段", Vector3Int.zero);
+        EditorGUI.Vector3IntField(new Rect(0, 1150, 200, 20), "这是一个Vector3Int字段", Vector3Int.zero);
         //Vector4Field 输入Vector4的xyzw字段
-        EditorGUI.Vector4Field(new Rect(0, 1150, 200, 20), "这是一个Vector4字段", Vector4.zero);
+        EditorGUI.Vector4Field(new Rect(0, 1190, 200, 20), "这是一个Vector4字段", Vector4.zero);
         //DelayedDoubleField 创建一个用于输入双精度浮点数的延迟文本字段
         EditorGUI.DelayedDoubleField(new Rect(300,990,200,20),"这是一个Double延迟文本字段",20);
         //DelayedFloatField 创建一个用于输入浮点数的延迟文本字段 
